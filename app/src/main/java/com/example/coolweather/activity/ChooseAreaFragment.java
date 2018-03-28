@@ -1,9 +1,11 @@
-package com.example.coolweather.gson;
+package com.example.coolweather.activity;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +35,13 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.R.attr.fragment;
+
 /**
  * Created by Administrator on 2018/3/26.
  *
- *  选择区域碎片
+ *  优先从本地数据库中获取省市县信息，若没有则从服务器上获取并写入到本地数据库当中，并显示到列表当中
+ *  Fragment 省市县碎片收集类
  */
 
 public class ChooseAreaFragment extends Fragment {
@@ -71,7 +76,13 @@ public class ChooseAreaFragment extends Fragment {
 
     private int currentLevel;
 
-
+    /**
+     * 初始化只执行一次
+     * @param inflater 将XML加载到视图当中
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -98,6 +109,12 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryCounties();
+                } else if (currentLevel == LEVEL_COUNTRY){
+                    String weatherId = countryList.get(position).getWeatherId();
+                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -114,9 +131,10 @@ public class ChooseAreaFragment extends Fragment {
         queryProvinces();
     }
 
-    /**
-     * 查询全国所有的省，优先从数据库里查，如果没有查到再去服务器上查询
-     */
+
+        /**
+         * 查询全国所有的省，优先从数据库里查，如果没有查到再去服务器上查询
+         */
     private void queryProvinces(){
         //设置标题
         titleText.setText("中国");
@@ -233,7 +251,7 @@ public class ChooseAreaFragment extends Fragment {
                     @Override
                     public void run() {
                         closeProgressDialog();
-                        Toast.makeText(GlobalApplication.getContext(),
+                        Toast.makeText(getActivity(),
                                 "加载失败",Toast.LENGTH_SHORT).show();
                     }
                 });
