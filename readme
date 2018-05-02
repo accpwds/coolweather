@@ -1,0 +1,14 @@
+分辨率对应DPI
+
+ldpi  QVGA (240×320)   120dpi以下
+
+mdpi  HVGA (320×480)   120dpi~160dpi
+
+hdpi  WVGA (480×800),FWVGA (480×854)    160dpi~240dpi
+
+xhdpi  720P（1280*720）   240dpi~320dpi
+
+xxhdpi 1080p（1920*1080 ）    320dpi~480dpi
+
+xxxhdpi 4K（3840×2160）
+

@@ -1,5 +1,6 @@
 package com.example.coolweather.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -9,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.example.coolweather.R;
 import com.example.coolweather.gson.Forecast;
 import com.example.coolweather.gson.Weather;
+import com.example.coolweather.service.AutoUpdateService;
 import com.example.coolweather.util.HttpUtil;
 import com.example.coolweather.util.LogUtil;
 import com.example.coolweather.util.Utility;
@@ -120,7 +123,15 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestWeather(weatherId);
+
+                SharedPreferences prefs = PreferenceManager.
+                        getDefaultSharedPreferences(WeatherActivity.this);
+                String newWeatherId = prefs.getString("id",null);
+                if (!TextUtils.isEmpty(newWeatherId)){
+                    requestWeather(newWeatherId);
+                } else {
+                    requestWeather(weatherId);
+                }
             }
         });
 
@@ -173,7 +184,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气ID去请求城市天气信息
      * @param weatherId
      */
-    public void requestWeather(String weatherId){
+    public void requestWeather(final String weatherId){
 
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId
                 + "&key=7cd28f22daf446efa81cd2d55ebcabcd";
@@ -202,8 +213,13 @@ public class WeatherActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = PreferenceManager.
                                     getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather",responeText);
+                            editor.putString("id",weatherId);
                             editor.apply();
                             showWeatherInfo(weather);
+
+                            //启动定时更新天气服务
+                            Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
+                            startService(intent);
                         } else {
                             Toast.makeText(WeatherActivity.this,"获取天气信息失败",
                                     Toast.LENGTH_SHORT).show();
@@ -254,5 +270,10 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

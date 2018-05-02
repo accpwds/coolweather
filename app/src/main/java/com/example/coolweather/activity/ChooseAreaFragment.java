@@ -1,11 +1,9 @@
 package com.example.coolweather.activity;
 
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.KeyEvent;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +19,6 @@ import com.example.coolweather.R;
 import com.example.coolweather.db.City;
 import com.example.coolweather.db.Country;
 import com.example.coolweather.db.Province;
-import com.example.coolweather.util.GlobalApplication;
 import com.example.coolweather.util.HttpUtil;
 import com.example.coolweather.util.LogUtil;
 import com.example.coolweather.util.Utility;
@@ -35,8 +32,6 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-
-import static android.R.attr.fragment;
 
 /**
  * Created by Administrator on 2018/3/26.
@@ -265,8 +260,6 @@ public class ChooseAreaFragment extends Fragment {
                     }
                 });
             }
-
-
         });
     }
 
